@@ -1,9 +1,9 @@
 Reproductible Research Course Project 1
 =======================================
 
-#R Markdown
+# R Markdown
 
-##Introduction
+## Introduction
 
 It is now possible to collect a large amount of data about personal movement using activity monitoring devices such as a Fitbit,
  Nike Fuelband, or Jawbone Up. These type of devices are part of the “quantified self” movement – 
@@ -22,7 +22,7 @@ The variables included in this dataset are:
 
 
 
-##Objective
+## Objective
 
 The objective of this project is to deliver an R markdown with:
 
@@ -37,7 +37,7 @@ The objective of this project is to deliver an R markdown with:
 9) All of the R code needed to reproduce the results (numbers, plots, etc.) in the report
 
 
-##Delivery
+## Delivery
 The delivery include
 1) c5_w2_Course_Project.Rmd: R markdown script.Set the source folder properly in the setwd() sentence
 in order to locate the date.
