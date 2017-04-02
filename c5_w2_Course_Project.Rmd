@@ -1,0 +1,90 @@
+---
+title: "Course Reproducible Research - R Markdown project "
+author: "Marcela Castro León"
+date: "April 1, 2017"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+#Course Reproducible Research - R Markdown project 
+
+##1) Code for reading in the dataset and/or processing the data
+```{r}
+library(dplyr)
+library(ggplot2)
+setwd("~/MEGAsync/DATA-SCIENCE/work/c5-w2-project")
+activity <- read.csv("activity.csv")
+activitydt<-tbl_df(activity)
+```
+
+
+##2) Histogram of the total number of steps taken each day
+```{r}
+stepbydate<-activitydt %>% group_by(date) %>% summarise(totalbyday=sum(steps,na.rm = TRUE)) 
+stepbydate$date<-as.Date(stepbydate$date,"%Y-%m-%d")
+ggplot(data = stepbydate, aes(date, totalbyday))+stat_summary(fun.y = sum,geom = "bar") +xlab("Day") + ylab("Total steps by day")
+```
+
+##3) Mean and median number of steps taken each day
+
+```{r}
+meanstepbydate<-activitydt %>% group_by(interval) %>% summarise(mean=mean(steps,na.rm=TRUE))
+medianstepbydate<-activitydt %>% group_by(interval) %>% summarise(median=median(steps,na.rm=TRUE))
+cbind(meanstepbydate, median=medianstepbydate$median)
+mean(stepbydate$totalbyday)
+median(stepbydate$totalbyday)
+```
+
+##4) Time series plot of the average number of steps taken
+
+```{r}
+stepbyinterval <- activitydt %>% group_by(interval) %>% summarise(avgbyinterval=mean(steps,na.rm=TRUE))
+plot(stepbyinterval$interval,stepbyinterval$avgbyinterval,type="l", main="Average number of steps taken", xlab="5 minute interval", ylab="Average steps")
+```
+
+##5) The 5-minute interval that, on average, contains the maximum number of steps
+```{r}
+filter(stepbyinterval, avgbyinterval==max(stepbyinterval$avgbyinterval))
+```
+
+##6)Code to describe and show a strategy for imputing missing data
+
+The mean of the interval in assigned for NA measures
+```{r}
+for (i in 1:nrow(activitydt)) {
+    rowact <- activitydt[i,]
+    meaninterval<-filter(stepbyinterval,interval==rowact$interval) 
+    if(is.na(activitydt[i,]$steps)) {
+      activitydt[i,]$steps<-meaninterval$avgbyinterval
+    }
+}
+```
+
+##7) Histogram of the total number of steps taken each day after missing values are imputed
+
+```{r}
+stepbydate2<-activitydt %>% group_by(date) %>% summarise(totalbyday=sum(steps)) 
+stepbydate2$date<-as.Date(stepbydate2$date,"%Y-%m-%d")
+ggplot(data = stepbydate2, aes(date, totalbyday))+stat_summary(fun.y = sum,geom = "bar") +xlab("Day") + ylab("Total steps by day after NA cleaning")
+```
+
+Mean and Median after removing NA value have increased
+```{r}
+mean(stepbydate2$totalbyday)
+median(stepbydate2$totalbyday)
+```
+
+##8) Panel plot comparing the average number of steps taken per 5-minute interval across weekdays and weekends
+```{r}
+library(chron)
+activitydt$date<-as.Date(activitydt$date,"%Y-%m-%d")
+activitydt <-mutate(activitydt,wend=is.weekend(activitydt$date))
+activitydtnowend <-filter(activitydt,!wend)
+activitydtwend <-filter(activitydt,wend)
+stepbyintervalnowend <- activitydtnowend %>% group_by(interval) %>% summarise(avgbyinterval=mean(steps,na.rm=TRUE))
+stepbyintervalwend <- activitydtwend %>% group_by(interval) %>% summarise(avgbyinterval=mean(steps,na.rm=TRUE))
+par(mfrow=c(1,2))
+plot(stepbyintervalnowend$interval,stepbyintervalnowend$avgbyinterval,type="l", main="Average steps in workdays", xlab="5 minute interval", ylab="Average steps")
+plot(stepbyintervalwend$interval,stepbyintervalwend$avgbyinterval,type="l", main="Average steps taken in weekend", xlab="5 minute interval", ylab="Average steps")
+```
