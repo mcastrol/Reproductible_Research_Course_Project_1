@@ -1,12 +1,12 @@
 ---
-title: "Course Reproducible Research - R Markdown project "
+title: "Reproducible Research: Peer Assessment 1"
 author: "Marcela Castro León"
 date: "April 1, 2017"
-output: html_document
+output: 
+  html_document:
+    keep_md: true
 ---
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+
 #Course Reproducible Research - R Markdown project 
 
 ##1) Code for reading in the dataset and/or processing the data
